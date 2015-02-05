@@ -10,6 +10,10 @@ var _ip = "127.0.0.1";
 var _uname = "";
 var _pwd = "";
 
+var wasAlarm = false;
+var isRecording = false;
+var _alarmBuffer = 0;
+
 var _alarmSound = 0;
 var _alarmMotion = 1;
 
@@ -40,7 +44,7 @@ function api_setAlarm(cb) {
         });
         
         res.on('end', function() {
-            console.log("reply:\n" + body);
+            console.log("setAlarm() reply: " + body);
             cb();
         });
     });
@@ -128,6 +132,8 @@ function exitHandler() {
     if ( isRecording ) {
         stop_record();
     }
+    
+    process.exit();
 };
 
 // Catch-all
@@ -153,6 +159,14 @@ process.argv.forEach(function (val, index, array) {
             
             case '-p': {
                 _pwd = encodeURIComponent(array[index+1]);
+            } break;
+            
+            case '-t': {
+                _alarmBuffer = array[index+1];
+                if ( isNaN(_alarmBuffer) ) {
+                    console.log("Alarm buffer timeout requires a number value");
+                    errorFlag = true;
+                }
             } break;
             
             case '-sound-on': {
@@ -187,20 +201,17 @@ if ( errorFlag ||
      _ip === '' || _ip === 'undefined' || 
      _uname === '' || _uname === 'undefined' || 
      _pwd === '' || _pwd === 'undefined' ) {
-    console.log("USAGE: insteon-wificam.js -h HOST -u USERNAME -p PASSWORD [-sound-on/off -motion-on/off]");
+    console.log("USAGE: insteon-wificam.js -h HOST -u USERNAME -p PASSWORD [-t 30] [-sound-on/off -motion-on/off]");
     process.exit();
 }
 
-
-var wasAlarm = false;
-var isRecording = false;
-var alarmBuffer = 0;
 api_getStatus(function(trick){
     if ( trick !== null ) {
         console.log("Options:");
         console.log(" IP: " + _ip);
         console.log(" Motion alarm: " + ((_alarmMotion > 0) ? "On" : "Off"));
         console.log(" Sound alarm: " + ((_alarmSound > 0) ? "On" : "Off"));
+        console.log(" Alarm buffer: " + _alarmBuffer + "s");
         console.log("\nCamera:");
         console.log(" INSTEON IP Camera Utility");
         console.log(" Device ID: " + trick.id);
@@ -212,6 +223,7 @@ api_getStatus(function(trick){
         // Reset + enable any alarms
         api_setAlarm(function(){
             // Main loop (1s interval)
+            console.log("Waiting for alarm...");
             var st = timers.setInterval(function(){
                 api_getStatus(function(trick){
                     
@@ -226,12 +238,12 @@ api_getStatus(function(trick){
                             isRecording = true;
                         }
                         
-                        alarmBuffer = 0;
+                        _alarmBuffer = 0;
                         wasAlarm = true;
                         
-                    } else if ( alarmBuffer < 30 && isRecording ) {
+                    } else if ( _alarmBuffer < 30 && isRecording ) {
                         console.log("Buffer in effect");
-                        alarmBuffer++;
+                        _alarmBuffer++;
                     } else {
                         if ( isRecording ) {
                             console.log("Stopped...");
@@ -239,7 +251,7 @@ api_getStatus(function(trick){
                             isRecording = false;
                         }
                         
-                        alarmBuffer = 0;
+                        _alarmBuffer = 0;
                         wasAlarm = false;
                     }
                 });
