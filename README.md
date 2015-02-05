@@ -1,4 +1,4 @@
-# Insteon-75790 Recorder
+# Insteon 75790 Wireless IP Camera Recorder
 Node.js app to record live video from your Insteon 75790 WiFi IP camera
 
 ## Getting Started
