@@ -12,7 +12,7 @@ You'll need your camera's IP address and your username + password for the camera
 Basically, this app checks the camera status every second and sees if an alert has been generated (by motion, sound, or external input). Then it will begin recording until the camera clears the alert. The camera usually holds an alert state for about a minute and a half. Unfortunately, there seems to be a design flaw where it will clear the alarm state for a few seconds before re-arming it (even if it sees motion the entire time). To mitigate this, I've placed a configurable (30s default) buffer that will continue the recording process once the alarm is cleared so that if the camera did, in fact, have an alarm pending it will not cause the recording to stop and then shortly after record again (multiple small video files).  
 
 ### Configure FFMPEG
-If FFMPEG is not installed in your PATH, place the FFMPEG executable (ffmpeg.exe) in the same folder as insteon.js. 
+If FFMPEG is not installed in your PATH, place the FFMPEG executable (ffmpeg.exe) in the same folder as insteon.js. If FFMPEG is not found, the application will terminate as soon as it tries to record. 
 
 ### Run the program
  ```USAGE: insteon-wificam.js -h HOST -u USERNAME -p PASSWORD [-t 30 -sound-on/off -motion-on/off]```
