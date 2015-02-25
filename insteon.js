@@ -9,6 +9,7 @@ var procRecord;
 var _ip = "127.0.0.1";
 var _uname = "";
 var _pwd = "";
+var _dest = "cam_%Y-%m-%d-%H-%M-%S.mpeg";
 
 var wasAlarm = false;
 var isRecording = false;
@@ -31,10 +32,10 @@ function api_setAlarm(cb) {
             "?user=" + _uname +
             "&pwd=" + _pwd + 
             "&motion_armed=" + _alarmMotion + 
-            "&motion_sensitivity=0" +
+            "&motion_sensitivity=2" +
             "&motion_compensation=1" +
             "&sounddetect_armed=" + + _alarmSound + 
-            "&sounddetect_sensitivity=0" +
+            "&sounddetect_sensitivity=2" +
             "&mail=0" +
             "&schedule_enable=0", function(res) {
         // Load the data in chunks
@@ -110,7 +111,7 @@ function start_record() {
             '-segment_time', '1800',
             '-map', '0',
             '-strftime', '1',
-            'cam_%Y-%m-%d-%H-%M-%S.mpeg'
+            _dest
         ];
         
         procRecord = spawn('ffmpeg.exe', cmdArgs);
@@ -169,6 +170,10 @@ process.argv.forEach(function (val, index, array) {
                 }
             } break;
             
+            case '-o': {
+                _dest = array[index+1];
+            } break;
+            
             case '-sound-on': {
                 _alarmSound = 1;
                 skipNext = false;
@@ -201,7 +206,7 @@ if ( errorFlag ||
      _ip === '' || _ip === 'undefined' || 
      _uname === '' || _uname === 'undefined' || 
      _pwd === '' || _pwd === 'undefined' ) {
-    console.log("USAGE: insteon-wificam.js -h HOST -u USERNAME -p PASSWORD [-t 30] [-sound-on/off -motion-on/off]");
+    console.log("USAGE: insteon-wificam.js -h HOST -u USERNAME -p PASSWORD [-o \"S:\\\\cam_%Y-%m-%d-%H-%M-%S.mpeg\"] [-t 30] [-sound-on/off -motion-on/off]");
     process.exit();
 }
 
@@ -209,6 +214,7 @@ api_getStatus(function(trick){
     if ( trick !== null ) {
         console.log("Options:");
         console.log(" IP: " + _ip);
+        console.log(" Output: " + _dest);
         console.log(" Motion alarm: " + ((_alarmMotion > 0) ? "On" : "Off"));
         console.log(" Sound alarm: " + ((_alarmSound > 0) ? "On" : "Off"));
         console.log(" Alarm buffer: " + _alarmBuffer + "s");
