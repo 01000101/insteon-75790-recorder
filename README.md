@@ -21,4 +21,4 @@ If FFMPEG is not installed in your PATH, place the FFMPEG executable (ffmpeg.exe
  
  Replace the obvious parts (IP address, username, password) with your own values and you should be good to go. The example above will send the username/password to the host at 172.16.0.112, enable both motion and sound alarms, and set a 2 minute buffer. The output path is system-dependant.
  
- This is an incredibly crude application that I hacked together to solve my own problem with the Insteon 75790 camera but I hope it can help others. To read more about the Insteon 75790 HTTP API and video recording functionality, see my post about it - https://joscor.com/2015/02/insteon-75790-video-recording-cgi-api/
+ This is an incredibly crude application that I hacked together to solve my own problem with the Insteon 75790 camera but I hope it can help others. To read more about the Insteon 75790 HTTP API and video recording functionality, see my post about it - https://joscor.com/blog/insteon-75790-video-recording-cgi-api/
